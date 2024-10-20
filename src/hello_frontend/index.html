@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input, textarea { display: block; margin-bottom: 10px; width: 300px; }
+    </style>
+</head>
+<body>
+
+<h1>Resume Manager</h1>
+
+<!-- Add Resume Form -->
+<h2>Add Resume</h2>
+<form id="addResumeForm">
+    <input type="text" id="addId" placeholder="Resume ID" required>
+    <input type="text" id="addName" placeholder="Name" required>
+    <input type="email" id="addEmail" placeholder="Email" required>
+    <input type="text" id="addPhone" placeholder="Phone" required>
+    <textarea id="addSkills" placeholder="Skills (comma-separated)" required></textarea>
+    <textarea id="addExperience" placeholder="Experience (comma-separated)" required></textarea>
+    <textarea id="addEducation" placeholder="Education (comma-separated)" required></textarea>
+    <button type="submit">Add Resume</button>
+</form>
+
+<!-- Update Resume Form -->
+<h2>Update Resume</h2>
+<form id="updateResumeForm">
+    <input type="text" id="updateId" placeholder="Resume ID" required>
+    <input type="text" id="updateName" placeholder="Name" required>
+    <input type="email" id="updateEmail" placeholder="Email" required>
+    <input type="text" id="updatePhone" placeholder="Phone" required>
+    <textarea id="updateSkills" placeholder="Skills (comma-separated)" required></textarea>
+    <textarea id="updateExperience" placeholder="Experience (comma-separated)" required></textarea>
+    <textarea id="updateEducation" placeholder="Education (comma-separated)" required></textarea>
+    <button type="submit">Update Resume</button>
+</form>
+
+<!-- Delete Resume Form -->
+<h2>Delete Resume</h2>
+<form id="deleteResumeForm">
+    <input type="text" id="deleteId" placeholder="Resume ID" required>
+    <button type="submit">Delete Resume</button>
+</form>
+
+<!-- List Resumes -->
+<h2>All Resumes</h2>
+<button id="listResumesBtn">List Resumes</button>
+<ul id="resumeList"></ul>
+
+<script>
+    const resumeServiceUrl = "http://localhost:8000/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai"; // Replace with your backend URL
+""
+    document.getElementById('addResumeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('addId').value;
+        const name = document.getElementById('addName').value;
+        const email = document.getElementById('addEmail').value;
+        const phone = document.getElementById('addPhone').value;
+        const skills = document.getElementById('addSkills').value.split(',');
+        const experience = document.getElementById('addExperience').value.split(',');
+        const education = document.getElementById('addEducation').value.split(',');
+
+        const resume = { name, email, phone, skills, experience, education };
+        const response = await fetch(`${resumeServiceUrl}/addResume`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, resume })
+        });
+
+        const result = await response.text();
+        alert(result);
+        e.target.reset();
+    };
+
+    document.getElementById('updateResumeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('updateId').value;
+        const name = document.getElementById('updateName').value;
+        const email = document.getElementById('updateEmail').value;
+        const phone = document.getElementById('updatePhone').value;
+        const skills = document.getElementById('updateSkills').value.split(',');
+        const experience = document.getElementById('updateExperience').value.split(',');
+        const education = document.getElementById('updateEducation').value.split(',');
+
+        const resume = { name, email, phone, skills, experience, education };
+        const response = await fetch(`${resumeServiceUrl}/updateResume`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, resume })
+        });
+
+        const result = await response.text();
+        alert(result);
+        e.target.reset();
+    };
+
+    document.getElementById('deleteResumeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('deleteId').value;
+
+        const response = await fetch(`${resumeServiceUrl}/deleteResume`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+
+        const result = await response.text();
+        alert(result);
+        e.target.reset();
+    };
+
+    document.getElementById('listResumesBtn').onclick = async () => {
+        const response = await fetch(`${resumeServiceUrl}/listResumes`);
+        const resumeIds = await response.json();
+        const resumeList = document.getElementById('resumeList');
+        resumeList.innerHTML = '';
+        resumeIds.forEach(id => {
+            const li = document.createElement('li');
+            li.textContent = id;
+            resumeList.appendChild(li);
+        });
+    };
+</script>
+
+</body>
+</html>
